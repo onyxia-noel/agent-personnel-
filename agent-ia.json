@@ -1,0 +1,499 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        656
+      ],
+      "id": "bf06342b-b5ad-491f-af74-1b0811c8f17f",
+      "name": "Telegram Trigger1",
+      "webhookId": "d80c457f-aef2-4b5d-bfa6-0dc540c1a728",
+      "credentials": {
+        "telegramApi": {
+          "id": "tm8f33KQz6FVEWt7",
+          "name": "erreur accont"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $now.setZone('Indian/Mauritius').toFormat('dd/MM/yyyy HH:mm') }}\n{{ $json.message.text }}\n",
+        "options": {
+          "systemMessage": "Tu es mon assistant personnel d'organisation sur Telegram.\n\nTu dois m'aider à organiser ma journée et mon agenda.\n\nRÈGLE ABSOLUE : Dès qu'un message contient un événement avec un titre, \nune date et une heure, tu DOIS obligatoirement appeler l'outil \n\"Create an event in Google Calendar\". Tu n'as pas le choix.\nNe jamais répondre sans avoir appelé l'outil si ces 3 infos sont présentes.\n\nTu dois reconnaître :\n- les rendez-vous\n- les tâches\n- les rappels\n- les créneaux de travail\n- les événements personnels\n\nInformations à identifier :\n- titre de l'événement\n- date (format JJ/MM/AAAA)\n- heure de début\n- heure de fin (si non précisée, ajoute 1h par défaut)\n- éventuelle note\n\nLe fuseau horaire est Indian/Mauritius (UTC+4).\nLa date actuelle t'est fournie au début de chaque message.\nUtilise-la comme référence absolue sans jamais la modifier.\n\nSi une information manque (titre, date ou heure), pose une seule question claire.\n\nQuand tu confirmes un événement créé, indique :\n- le titre\n- la date au format JJ/MM/AAAA\n- l'heure\n- un résumé simple\n\nQuand tu appelles l'outil Google Calendar, les dates doivent être \nau format ISO 8601 obligatoirement :\n- Début : 2026-03-21T12:00:00+04:00\n- Fin : 2026-03-21T15:00:00+04:00\nLe fuseau horaire de Maurice est UTC+4, donc toujours ajouter +04:00 \nà la fin de chaque date.\n\nRéponds toujours en français, de manière courte et claire."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1472,
+        656
+      ],
+      "id": "961ffa41-a08a-4297-bec5-4942ad9fce92",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        880
+      ],
+      "id": "f997b0a4-b529-4790-86fa-a3ea6aceb6ab",
+      "name": "Groq Chat Model1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "groqApi": {
+          "id": "l3eyXeklaOraO6g3",
+          "name": "Groq account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger1').item.json.message.from.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1552,
+        848
+      ],
+      "id": "1a5cbce9-16f1-43ef-9138-5040716c01de",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "ceraclair.pro@gmail.com",
+          "mode": "list",
+          "cachedResultName": "ceraclair.pro@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "additionalFields": {
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1664,
+        864
+      ],
+      "id": "b311212d-64ee-43db-b981-8c9880cb6b71",
+      "name": "Create an event in Google Calendar1",
+      "notesInFlow": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "TuJ1T6OSP86ARG0k",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "7938434176",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1936,
+        656
+      ],
+      "id": "008b1a4e-4e45-4c79-8879-289d88546308",
+      "name": "Send a text message1",
+      "webhookId": "76e1ef42-10ae-4e48-a2b2-090abeb17c28",
+      "credentials": {
+        "telegramApi": {
+          "id": "tm8f33KQz6FVEWt7",
+          "name": "erreur accont"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a140d713-c309-433e-97ac-0d7afce0ce40",
+              "leftValue": "={{ $json.message.voice }}",
+              "rightValue": "={{ $json.message.voice }}",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        656
+      ],
+      "id": "55414dbf-e52d-49ce-b254-98c20747df01",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        256,
+        464
+      ],
+      "id": "23945e1a-10ba-4d8a-a1b5-78370c360232",
+      "name": "Get a file",
+      "webhookId": "35de4f24-b0ac-4176-98a8-eed2b9593dcc",
+      "credentials": {
+        "telegramApi": {
+          "id": "tm8f33KQz6FVEWt7",
+          "name": "erreur accont"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot8624154230:AAFtEWyRej4r0GcVRiz5ssB1FZ_5GLDiC1s/{{ $json.result.file_path }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        480,
+        464
+      ],
+      "id": "8d4d5bfb-b8dc-4980-8757-9cdcc194ea40",
+      "name": "HTTP telecharger la video"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/audio/transcriptions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "model",
+              "value": "whisper-large-v3"
+            },
+            {
+              "name": "language",
+              "value": "fr"
+            },
+            {
+              "name": "response_format",
+              "value": "json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        928,
+        464
+      ],
+      "id": "8475edfe-9f21-4e5b-8812-74750242ad7a",
+      "name": "croq whisper",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "gKmSDSpcSUMAVxKu",
+          "name": "eleven labs audio"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "796a96a1-ae53-4685-aa20-13484ee0b784",
+              "name": "message.text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1152,
+        464
+      ],
+      "id": "5f00879a-482c-4917-8691-286a30443dda",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.item;\n\nif (!item.binary || !item.binary.data) {\n  throw new Error(\"Aucun fichier binaire trouvé dans item.binary.data\");\n}\n\nconst bin = item.binary.data;\n\nbin.fileName = (bin.fileName || \"audio.oga\").replace(/\\.oga$/i, \".ogg\");\nbin.fileExtension = \"ogg\";\nbin.mimeType = \"audio/ogg\";\n\nreturn item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        464
+      ],
+      "id": "14b97ab2-8595-4b7a-9dc7-a86390f91f13",
+      "name": "Convertir OGA en OGG"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "ceraclair.pro@gmail.com",
+          "mode": "list",
+          "cachedResultName": "ceraclair.pro@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {
+          "sendUpdates": "all"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1808,
+        864
+      ],
+      "id": "a75365e9-0c5e-47ed-bea8-592ffc9a2c91",
+      "name": "Delete an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "TuJ1T6OSP86ARG0k",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## lancement du agent ",
+        "height": 464,
+        "width": 432,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -272,
+        496
+      ],
+      "typeVersion": 1,
+      "id": "e19d0ebf-9bd3-4a48-a627-d24e0c0484d2",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## gestion des vocaux ",
+        "height": 336,
+        "width": 1184,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        304
+      ],
+      "typeVersion": 1,
+      "id": "80ce7eac-2e43-4b7a-8c95-322d36eb4322",
+      "name": "Sticky Note2"
+    }
+  ],
+  "connections": {
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "HTTP telecharger la video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP telecharger la video": {
+      "main": [
+        [
+          {
+            "node": "Convertir OGA en OGG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "croq whisper": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convertir OGA en OGG": {
+      "main": [
+        [
+          {
+            "node": "croq whisper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "81ee8e1faf75b5da3da111c9753db9469a00113beb9627f0456b3f1900e6c941"
+  }
+}
