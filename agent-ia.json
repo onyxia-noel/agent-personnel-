@@ -188,7 +188,7 @@
     },
     {
       "parameters": {
-        "url": "=https://api.telegram.org/file/bot8624154230:AAFtEWyRej4r0GcVRiz5ssB1FZ_5GLDiC1s/{{ $json.result.file_path }}",
+        "url": "=https://api.telegram.org/file/bot(token telegram)/{{ $json.result.file_path }}",
         "options": {
           "response": {
             "response": {
